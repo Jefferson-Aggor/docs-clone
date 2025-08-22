@@ -4,8 +4,21 @@
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 
+// Font
+import FontFamily from '@tiptap/extension-font-family';
+import TextStyle from '@tiptap/extension-text-style';
+
+// Heading
+import Heading from '@tiptap/extension-heading';
+
 // Underline
 import Underline from '@tiptap/extension-underline';
+
+// Color
+import { Color } from '@tiptap/extension-color';
+
+// Highlight
+import Highlight from '@tiptap/extension-highlight';
 
 // Task List
 import TaskItem from '@tiptap/extension-task-item';
@@ -59,8 +72,13 @@ export const Editor = () => {
     },
     extensions: [
       StarterKit,
+      FontFamily,
+      TextStyle,
       Underline,
       TaskList,
+      Heading,
+      Highlight.configure({ multicolor: true }),
+      Color,
       ImageResize.configure({
         inline: true,
       }),
