@@ -6,7 +6,7 @@ import StarterKit from '@tiptap/starter-kit';
 
 // Font
 import FontFamily from '@tiptap/extension-font-family';
-import TextStyle from '@tiptap/extension-text-style';
+import { TextStyle } from '@tiptap/extension-text-style';
 
 // Heading
 import Heading from '@tiptap/extension-heading';
@@ -16,6 +16,10 @@ import Underline from '@tiptap/extension-underline';
 
 // Text Align
 import TextAlign from '@tiptap/extension-text-align';
+
+// Subscript and Superscript
+import Subscript from '@tiptap/extension-subscript';
+import Superscript from '@tiptap/extension-superscript';
 
 // Color
 import { Color } from '@tiptap/extension-color';
@@ -40,7 +44,10 @@ import TableRow from '@tiptap/extension-table-row';
 import Image from '@tiptap/extension-image';
 import ImageResize from 'tiptap-extension-resize-image';
 
+// Custom extensions
 import { useEditorStore } from '@/store/use-editor-store';
+import { FontSizeExtension } from '@/extensions/font-size';
+import { LineHeightExtension } from '@/extensions/line-height';
 
 export const Editor = () => {
   const { setEditor } = useEditorStore();
@@ -78,6 +85,11 @@ export const Editor = () => {
     },
     extensions: [
       StarterKit,
+      FontSizeExtension,
+      LineHeightExtension.configure({
+        types: ['heading', 'paragraph'],
+        defaultLineHeight: 'normal',
+      }),
       Link.configure({
         openOnClick: true,
         autolink: true,
@@ -88,6 +100,8 @@ export const Editor = () => {
       TextAlign.configure({
         types: ['heading', 'paragraph'],
       }),
+      Subscript,
+      Superscript,
       Underline,
       TaskList,
       Heading,
@@ -110,9 +124,20 @@ export const Editor = () => {
       TableCell,
     ],
     content: `
-        <h2>Heading</h2>
-        <p style="text-align: center">first paragraph</p>
-        <p style="text-align: right">second paragraph</p>
+        <table>
+          <tbody>
+            <tr>
+              <th>Name</th>
+              <th colspan="3">Description</th>
+            </tr>
+            <tr>
+              <td>Cyndi Lauper</td>
+              <td>Singer</td>
+              <td>Songwriter</td>
+              <td>Actress</td>
+            </tr>
+          </tbody>
+        </table>
       `,
   });
   return (
