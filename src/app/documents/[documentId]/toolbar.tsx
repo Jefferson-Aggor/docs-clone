@@ -7,19 +7,30 @@ import { type ColorResult, CirclePicker } from 'react-color';
 import { cn } from '@/lib/utils';
 import { useEditorStore } from '@/store/use-editor-store';
 import {
+  AlignCenterIcon,
+  AlignJustifyIcon,
+  AlignLeftIcon,
+  AlignRightIcon,
   BoldIcon,
   ChevronDownIcon,
   HighlighterIcon,
+  ImageIcon,
   ItalicIcon,
+  Link2Icon,
+  Link2Off,
+  ListIcon,
+  ListOrderedIcon,
   ListTodoIcon,
   LucideIcon,
   MessageSquarePlusIcon,
   PrinterIcon,
   Redo2Icon,
   RemoveFormattingIcon,
+  SearchIcon,
   SpellCheckIcon,
   UnderlineIcon,
   Undo2Icon,
+  UploadIcon,
 } from 'lucide-react';
 
 import {
@@ -28,7 +39,18 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+
 import { Separator } from '@/components/ui/separator';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 
 interface ToolbarButtonProps {
   onClick?: () => void;
@@ -204,6 +226,198 @@ const TextHighlightButton = () => {
   );
 };
 
+const LinkButton = () => {
+  const { editor } = useEditorStore();
+  const [value, setValue] = useState('');
+
+  const onChange = (href: string) => {
+    editor?.chain().focus().extendMarkRange('link').setLink({ href }).run();
+    setValue('');
+  };
+
+  return (
+    <div className="flex gap-x-1">
+      <DropdownMenu
+        onOpenChange={(open) => {
+          if (open) {
+            setValue(editor?.getAttributes('link').href || '');
+          }
+        }}
+      >
+        <DropdownMenuTrigger asChild>
+          <button className="h-7 min-w-7 shrink-0 flex  items-center justify-center rounded-sm hover:bg-neutral-200/80 px-1.5 overflow-hidden text-sm">
+            <Link2Icon className="size-4" />
+          </button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent className="p-2.5 flex items-center gap-x-2">
+          <Input
+            value={value}
+            onChange={(e) => setValue(e.target.value)}
+            placeholder="https://google.com"
+          />
+          <Button onClick={() => onChange(value)}>Apply</Button>
+        </DropdownMenuContent>
+      </DropdownMenu>
+
+      <button
+        onClick={() => {
+          editor?.chain().focus().unsetLink().run();
+        }}
+        className="h-7 min-w-7 shrink-0 flex  items-center justify-center rounded-sm hover:bg-neutral-200/80 px-1.5 overflow-hidden text-sm"
+      >
+        <Link2Off className="size-4" />
+      </button>
+    </div>
+  );
+};
+
+const ImageButton = () => {
+  const { editor } = useEditorStore();
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [imageUrl, setImageUrl] = useState('');
+
+  const onChange = (src: string) => {
+    editor?.chain().focus().setImage({ src }).run();
+  };
+
+  const onUpload = () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+
+    input.onchange = (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0];
+
+      if (file) {
+        const imageUrl = URL.createObjectURL(file);
+        onChange(imageUrl);
+      }
+    };
+
+    input.click();
+  };
+
+  const handleImageUrlSubmit = () => {
+    if (imageUrl) {
+      onChange(imageUrl);
+      setImageUrl('');
+      setIsDialogOpen(false);
+    }
+  };
+
+  return (
+    <>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <button className="h-7 min-w-7 shrink-0 flex  items-center justify-center rounded-sm hover:bg-neutral-200/80 px-1.5 overflow-hidden text-sm">
+            <ImageIcon className="size-4" />
+          </button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent className="p-2.5 ">
+          <p className="text-sm text-muted-foreground mb-2">
+            Upload your images
+          </p>
+          <div className=" gap-y-2">
+            <DropdownMenuItem onClick={onUpload}>
+              <UploadIcon className="size-4 mr-2" /> Upload
+            </DropdownMenuItem>
+
+            <DropdownMenuItem onClick={() => setIsDialogOpen(true)}>
+              <SearchIcon className="size-4 mr-2" /> Paste image URL
+            </DropdownMenuItem>
+          </div>
+        </DropdownMenuContent>
+      </DropdownMenu>
+
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Insert image URL</DialogTitle>
+          </DialogHeader>
+          <Input
+            placeholder="Insert image URL"
+            value={imageUrl}
+            onChange={(e) => setImageUrl(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                handleImageUrlSubmit();
+              }
+            }}
+          />
+          <DialogFooter>
+            <Button onClick={handleImageUrlSubmit}>Insert</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
+  );
+};
+
+const TextAlignButton = () => {
+  const { editor } = useEditorStore();
+
+  const alignments: { label: string; value: string; icon: LucideIcon }[] = [
+    { label: 'Align Left', value: 'left', icon: AlignLeftIcon },
+    { label: 'Align Center', value: 'center', icon: AlignCenterIcon },
+    { label: 'Align Right', value: 'right', icon: AlignRightIcon },
+    { label: 'Align Justify', value: 'justify', icon: AlignJustifyIcon },
+  ];
+
+  return (
+    <div className="flex space-x-2">
+      {alignments.map(({ label, value, icon: Icon }) => (
+        <button
+          key={label}
+          onClick={() => editor?.chain().focus().setTextAlign(value).run()}
+          className={cn(
+            'h-7 min-w-7 shrink-0 flex  items-center justify-center rounded-sm hover:bg-neutral-200/80 px-1.5 overflow-hidden text-sm',
+            editor?.isActive({ textAlign: value }) && 'bg-neutral-200/80'
+          )}
+        >
+          <Icon className="size-4" />
+        </button>
+      ))}
+    </div>
+  );
+};
+
+const ListButton = () => {
+  const { editor } = useEditorStore();
+
+  const lists = [
+    {
+      label: 'Bullet List',
+      icon: ListIcon,
+      onClick: () => editor?.chain().focus().toggleBulletList().run(),
+      isActive: editor?.isActive('bulletList') && 'bg-neutral-200/80',
+    },
+
+    {
+      label: 'Ordered List',
+      icon: ListOrderedIcon,
+      onClick: () => editor?.chain().focus().toggleOrderedList().run(),
+      isActive: editor?.isActive('orderedList') && 'bg-neutral-200/80',
+    },
+  ];
+
+  return (
+    <div className="flex space-x-2">
+      {lists.map(({ label, icon: Icon, onClick, isActive }) => (
+        <button
+          key={label}
+          onClick={onClick}
+          className={cn(
+            'h-7 min-w-7 shrink-0 flex  items-center justify-center rounded-sm hover:bg-neutral-200/80 px-1.5 overflow-hidden text-sm',
+            isActive
+          )}
+        >
+          <Icon className="size-4" />
+        </button>
+      ))}
+    </div>
+  );
+};
+
 export const Toolbar = () => {
   const { editor } = useEditorStore();
 
@@ -304,6 +518,8 @@ export const Toolbar = () => {
 
       <TextColorButton />
       <TextHighlightButton />
+      <Separator orientation="vertical" className="h-6 bg-neutral-300" />
+      <TextAlignButton />
 
       <Separator orientation="vertical" className="h-6 bg-neutral-300" />
 
@@ -311,6 +527,9 @@ export const Toolbar = () => {
         <ToolbarButton key={item.label} {...item} />
       ))}
       <Separator orientation="vertical" className="h-6 bg-neutral-300" />
+      <LinkButton />
+      <ImageButton />
+      <ListButton />
     </div>
   );
 };

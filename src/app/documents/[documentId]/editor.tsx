@@ -14,6 +14,9 @@ import Heading from '@tiptap/extension-heading';
 // Underline
 import Underline from '@tiptap/extension-underline';
 
+// Text Align
+import TextAlign from '@tiptap/extension-text-align';
+
 // Color
 import { Color } from '@tiptap/extension-color';
 
@@ -23,6 +26,9 @@ import Highlight from '@tiptap/extension-highlight';
 // Task List
 import TaskItem from '@tiptap/extension-task-item';
 import TaskList from '@tiptap/extension-task-list';
+
+// Link
+import Link from '@tiptap/extension-link';
 
 // Table
 import Table from '@tiptap/extension-table';
@@ -72,8 +78,16 @@ export const Editor = () => {
     },
     extensions: [
       StarterKit,
+      Link.configure({
+        openOnClick: true,
+        autolink: true,
+        defaultProtocol: 'https',
+      }),
       FontFamily,
       TextStyle,
+      TextAlign.configure({
+        types: ['heading', 'paragraph'],
+      }),
       Underline,
       TaskList,
       Heading,
@@ -96,20 +110,9 @@ export const Editor = () => {
       TableCell,
     ],
     content: `
-        <table>
-          <tbody>
-            <tr>
-              <th>Name</th>
-              <th colspan="3">Description</th>
-            </tr>
-            <tr>
-              <td>Cyndi Lauper</td>
-              <td>Singer</td>
-              <td>Songwriter</td>
-              <td>Actress</td>
-            </tr>
-          </tbody>
-        </table>
+        <h2>Heading</h2>
+        <p style="text-align: center">first paragraph</p>
+        <p style="text-align: right">second paragraph</p>
       `,
   });
   return (
