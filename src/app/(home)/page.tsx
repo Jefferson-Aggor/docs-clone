@@ -1,7 +1,5 @@
-import Link from 'next/link';
-import { Button } from '@/components/ui/button';
-
 import { Navbar } from './navbar';
+import { TemplatesGallery } from './templates-gallery';
 
 const Home = () => {
   return (
@@ -10,9 +8,7 @@ const Home = () => {
         <Navbar />
       </div>
       <div className="mt-16">
-        <Link href={'/documents/123'}>
-          <Button variant={'link'}>Go to document ID</Button>
-        </Link>
+        <TemplatesGallery />
       </div>
     </div>
   );
