@@ -65,7 +65,13 @@ export const DocumentsTable = ({
           onClick={() => loadMore(5)}
           disabled={status != 'CanLoadMore'}
         >
-          {status === 'CanLoadMore' ? 'Load more' : 'End of results'}
+          {documents?.length! > 0 ? (
+            <span>
+              {status === 'CanLoadMore' ? 'Load more' : 'End of results'}
+            </span>
+          ) : (
+            ''
+          )}
         </Button>
       </div>
     </div>
