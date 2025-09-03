@@ -1,22 +1,30 @@
 import { format } from 'date-fns';
 import { SiGoogledocs } from 'react-icons/si';
-import { Building2Icon, CircleUserIcon, MoreVertical } from 'lucide-react';
+import { Building2Icon, CircleUserIcon } from 'lucide-react';
 
 import { TableCell, TableRow } from '@/components/ui/table';
 
 import { Doc } from '../../../convex/_generated/dataModel';
-import { Button } from '@/components/ui/button';
+import { DocumentDropdownMenu } from './document-dropdown-menu';
+import { useRouter } from 'next/navigation';
 
 interface DocumentRowProps {
   document: Doc<'documents'>;
 }
 export const DocumentRow = ({ document }: DocumentRowProps) => {
+  const router = useRouter();
+
   return (
     <TableRow>
       <TableCell className="w-[50px]">
         <SiGoogledocs className="size-6 fill-blue-500" />
       </TableCell>
-      <TableCell className="font-medium md:w-[45%]">{document.title}</TableCell>
+      <TableCell
+        onClick={() => router.push(`/documents/${document._id}`)}
+        className="cursor-pointer font-medium md:w-[45%] hover:underline"
+      >
+        {document.title}
+      </TableCell>
       <TableCell className="text-muted-foreground hidden md:flex items-center gap-2">
         {document.organizationId ? (
           <Building2Icon className="size-4" />
@@ -29,9 +37,11 @@ export const DocumentRow = ({ document }: DocumentRowProps) => {
         {format(new Date(document._creationTime), 'MMM dd, yyyy')}
       </TableCell>
       <TableCell className="flex justify-end">
-        <Button variant={'ghost'} size={'icon'} className="rounded-full">
-          <MoreVertical className="size-4" />
-        </Button>
+        <DocumentDropdownMenu
+          documentId={document._id}
+          title={document.title}
+          onNewTab={() => window.open(`/documents/${document._id}`, '_blank')}
+        />
       </TableCell>
     </TableRow>
   );
