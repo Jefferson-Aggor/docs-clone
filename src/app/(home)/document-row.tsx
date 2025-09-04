@@ -8,12 +8,14 @@ import { Doc } from '../../../convex/_generated/dataModel';
 import { DocumentDropdownMenu } from './document-dropdown-menu';
 import { useRouter } from 'next/navigation';
 
+import { useUser } from '@clerk/nextjs';
+
 interface DocumentRowProps {
   document: Doc<'documents'>;
 }
 export const DocumentRow = ({ document }: DocumentRowProps) => {
   const router = useRouter();
-
+  const { user } = useUser();
   return (
     <TableRow>
       <TableCell className="w-[50px]">
@@ -40,6 +42,10 @@ export const DocumentRow = ({ document }: DocumentRowProps) => {
         <DocumentDropdownMenu
           documentId={document._id}
           title={document.title}
+          isAllowed={
+            document.ownerId === user?.id ||
+            user?.organizationMemberships[0].role == 'org:admin'
+          }
           onNewTab={() => window.open(`/documents/${document._id}`, '_blank')}
         />
       </TableCell>

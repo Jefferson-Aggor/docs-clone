@@ -1,4 +1,7 @@
 'use client';
+import { useEditorStore } from '@/store/use-editor-store';
+import { OrganizationSwitcher, UserButton } from '@clerk/nextjs';
+
 import Image from 'next/image';
 import Link from 'next/link';
 import { DocumentInput } from './document-input';
@@ -34,8 +37,6 @@ import {
   MenubarSubTrigger,
   MenubarTrigger,
 } from '@/components/ui/menubar';
-
-import { useEditorStore } from '@/store/use-editor-store';
 
 export const Navbar = () => {
   const { editor } = useEditorStore();
@@ -266,6 +267,16 @@ export const Navbar = () => {
             </Menubar>
           </div>
         </div>
+      </div>
+
+      <div className="flex items-center gap-x-3 pl-6">
+        <OrganizationSwitcher
+          afterCreateOrganizationUrl={'/'}
+          afterLeaveOrganizationUrl={'/'}
+          afterSelectOrganizationUrl={'/'}
+          afterSelectPersonalUrl={'/'}
+        />
+        <UserButton />
       </div>
     </nav>
   );

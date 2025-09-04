@@ -16,6 +16,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
+import { toast } from 'sonner';
 
 interface RemoveDialogProps {
   documentId: Id<'documents'>;
@@ -47,8 +48,11 @@ export const RemoveDialog = ({ documentId, children }: RemoveDialogProps) => {
               e.preventDefault();
               setIsRemoving(true);
               remove({ documentId })
+                .then(() => {
+                  toast.warning('Document deleted');
+                })
                 .catch((e) => {
-                  console.log(e);
+                  toast.error('Something went wrong');
                 })
                 .finally(() => {
                   setIsRemoving(false);

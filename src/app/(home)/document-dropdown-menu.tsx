@@ -18,18 +18,24 @@ import {
 } from 'lucide-react';
 
 import { Id } from '../../../convex/_generated/dataModel';
+import { toast } from 'sonner';
 
 interface DocumentDropdownMenuProps {
   documentId: Id<'documents'>;
   title: string;
+  isAllowed: boolean;
   onNewTab: (id: Id<'documents'>) => void;
 }
 
 export const DocumentDropdownMenu = ({
   documentId,
   title,
+  isAllowed,
   onNewTab,
 }: DocumentDropdownMenuProps) => {
+  const handleError = (msg: string) => {
+    toast.error(msg);
+  };
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -38,17 +44,35 @@ export const DocumentDropdownMenu = ({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="flex flex-col">
-        <RenameDialog documentId={documentId} title={title}>
-          <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-            <FilePenIcon className="size-4 mr-2 fill" /> Rename
+        {isAllowed ? (
+          <RenameDialog documentId={documentId} title={title}>
+            <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+              <FilePenIcon className="size-4 mr-2 fill" /> Rename
+            </DropdownMenuItem>
+          </RenameDialog>
+        ) : (
+          <DropdownMenuItem
+            onClick={() => handleError('Action not authorized')}
+            className="text-muted-foreground cursor-not-allowed"
+          >
+            <FilePenIcon className="size-4 mr-2 fill" /> <p>Rename</p>
           </DropdownMenuItem>
-        </RenameDialog>
+        )}
 
-        <RemoveDialog documentId={documentId}>
-          <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+        {isAllowed ? (
+          <RemoveDialog documentId={documentId}>
+            <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+              <TrashIcon className="size-4 mr-2 fill" /> Delete
+            </DropdownMenuItem>
+          </RemoveDialog>
+        ) : (
+          <DropdownMenuItem
+            onClick={() => handleError('Action not authorized')}
+            className="text-muted-foreground cursor-not-allowed"
+          >
             <TrashIcon className="size-4 mr-2 fill" /> Delete
           </DropdownMenuItem>
-        </RemoveDialog>
+        )}
 
         <DropdownMenuItem onClick={() => onNewTab(documentId)}>
           <ExternalLinkIcon className="size-4 mr-2" />

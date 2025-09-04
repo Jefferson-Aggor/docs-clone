@@ -13,9 +13,14 @@ export const create = mutation({
 
     if (!user) throw new ConvexError('User unauthorized...');
 
+    const organizationId = (user.organization_id ?? undefined) as
+      | string
+      | undefined;
+
     const documentID = await ctx.db.insert('documents', {
       title: args.title ?? 'Untitled document',
       initialContent: args.initialContent,
+      organizationId,
       ownerId: user.subject,
     });
 
@@ -33,6 +38,19 @@ export const get = query({
 
     if (!user) throw new ConvexError('User unauthorized...');
 
+    const organizationId = (user.organization_id ?? undefined) as
+      | string
+      | undefined;
+
+    if (search && organizationId !== undefined) {
+      return ctx.db
+        .query('documents')
+        .withSearchIndex('search_title', (q) =>
+          q.search('title', search).eq('organizationId', organizationId)
+        )
+        .paginate(paginationOpts);
+    }
+
     if (search) {
       return ctx.db
         .query('documents')
@@ -41,6 +59,16 @@ export const get = query({
         )
         .paginate(paginationOpts);
     }
+
+    if (organizationId) {
+      return await ctx.db
+        .query('documents')
+        .withIndex('by_organization_id', (q) =>
+          q.eq('organizationId', organizationId)
+        )
+        .paginate(paginationOpts);
+    }
+
     return await ctx.db
       .query('documents')
       .withIndex('by_owner_id', (q) => q.eq('ownerId', user.subject))
@@ -62,7 +90,8 @@ export const removeById = mutation({
 
     const isOwner = document.ownerId === user.subject;
 
-    if (!isOwner) throw new ConvexError('User unauthorized');
+    if (!isOwner || user.organization_role == 'org:member')
+      throw new ConvexError('User unauthorized');
 
     return await ctx.db.delete(args.documentId);
   },
@@ -82,7 +111,8 @@ export const updateById = mutation({
 
     const isOwner = document.ownerId === user.subject;
 
-    if (!isOwner) throw new ConvexError('User unauthorized');
+    if (!isOwner && user.organization_role == 'org:member')
+      throw new ConvexError('User unauthorized');
 
     return await ctx.db.patch(args.documentId, { title: args.title });
   },

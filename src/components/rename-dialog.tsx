@@ -17,6 +17,7 @@ import {
 
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { toast } from 'sonner';
 
 interface RenameDialogProps {
   documentId: Id<'documents'>;
@@ -38,8 +39,11 @@ export const RenameDialog = ({
     e.preventDefault();
     setIsUpdating(true);
     update({ documentId, title: value.trim() || 'Untitled' })
+      .then(() => {
+        toast.success('Document renamed');
+      })
       .catch((e) => {
-        console.log(e);
+        toast.error('Unauthorized action');
       })
       .finally(() => {
         setIsUpdating(false);
