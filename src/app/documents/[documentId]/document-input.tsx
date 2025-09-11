@@ -89,7 +89,7 @@ export const DocumentInput = ({ title, id }: DocumentInputProps) => {
           onClick={() => {
             setIsEditing(true);
             setTimeout(() => {
-              inputRef.current?.focus;
+              inputRef.current?.focus();
             }, 0);
           }}
           className="text-lg px-1.5 cursor-pointer truncate"

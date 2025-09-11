@@ -4,7 +4,6 @@ import { Doc } from '../../../convex/_generated/dataModel';
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
@@ -65,7 +64,7 @@ export const DocumentsTable = ({
           onClick={() => loadMore(5)}
           disabled={status != 'CanLoadMore'}
         >
-          {documents?.length! > 0 ? (
+          {documents && documents.length! > 0 ? (
             <span>
               {status === 'CanLoadMore' ? 'Load more' : 'End of results'}
             </span>

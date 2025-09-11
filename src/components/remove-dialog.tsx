@@ -56,7 +56,7 @@ export const RemoveDialog = ({ documentId, children }: RemoveDialogProps) => {
                     router.replace('/');
                   }, 0);
                 })
-                .catch((e) => {
+                .catch(() => {
                   toast.error('Something went wrong');
                 })
                 .finally(() => {

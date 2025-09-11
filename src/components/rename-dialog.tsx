@@ -42,7 +42,7 @@ export const RenameDialog = ({
       .then(() => {
         toast.success('Document renamed');
       })
-      .catch((e) => {
+      .catch(() => {
         toast.error('Unauthorized action');
       })
       .finally(() => {
