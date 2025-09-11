@@ -3,24 +3,6 @@ import { ConvexHttpClient } from 'convex/browser';
 import { auth, currentUser } from '@clerk/nextjs/server';
 import { api } from '../../../../convex/_generated/api';
 
-interface ClerkSessionClaims {
-  azp: string;
-  exp: number;
-  fva: number[];
-  iat: number;
-  iss: string;
-  nbf: number;
-  o?: {
-    id: string;
-    rol: string;
-    slg: string;
-  };
-  sid: string;
-  sts: string;
-  sub: string;
-  v: number;
-}
-
 const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
 
 const liveblocks = new Liveblocks({
