@@ -52,9 +52,17 @@ import { LineHeightExtension } from '@/extensions/line-height';
 // Liveblocks
 import { useLiveblocksExtension } from '@liveblocks/react-tiptap';
 import { Threads } from './threads';
+import { Doc } from '../../../../convex/_generated/dataModel';
 
-export const Editor = () => {
-  const liveblocks = useLiveblocksExtension();
+interface EditorProps {
+  document: Doc<'documents'>;
+}
+
+export const Editor = ({ document }: EditorProps) => {
+  const liveblocks = useLiveblocksExtension({
+    initialContent: document.initialContent,
+    offlineSupport_experimental: true,
+  });
   const { setEditor } = useEditorStore();
   const editor = useEditor({
     onCreate({ editor }) {
@@ -132,6 +140,7 @@ export const Editor = () => {
       TableCell,
     ],
     immediatelyRender: false,
+    content: document.initialContent,
   });
   return (
     <div className="size-full overflow-x-auto bg-[#f9fbfd] px-4 print:p-0 print:bg-white print:overflow-visible">

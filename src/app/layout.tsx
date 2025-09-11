@@ -30,7 +30,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${inter.className} antialiased`}>
         <NuqsAdapter>
-          <Toaster richColors={true} />
+          <Toaster />
           <ConvexClientProvider>{children}</ConvexClientProvider>
         </NuqsAdapter>
       </body>
